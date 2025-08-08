@@ -1,17 +1,17 @@
 import prisma from "@/config/prisma";
-import { Post, Prisma } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma";
 import calculatePagination, { PaginationOptions } from "@/utils/pagination";
 
-const createPost = async (data: Post) => {
-  return prisma.post.create({ data });
+const createQuestion = async (data: Prisma.QuestionCreateInput) => {
+  return prisma.question.create({ data });
 };
 
-const getPostById = async (id: string) => {
-  return prisma.post.findUnique({ where: { id } });
+const getQuestionById = async (id: string) => {
+  return prisma.question.findUnique({ where: { id } });
 };
 
-const getPaginatedPosts = async (
-  filters: { search?: string } & Partial<Post>,
+const getPaginatedQuestions = async (
+  filters: { search?: string } & Partial<Prisma.QuestionWhereInput>,
   options: PaginationOptions,
 ) => {
   const {
@@ -23,7 +23,7 @@ const getPaginatedPosts = async (
   } = calculatePagination(options);
   const { search, ...filterData } = filters;
 
-  const conditions: Prisma.PostWhereInput[] = [];
+  const conditions: Prisma.QuestionWhereInput[] = [];
 
   // partial match
   if (search) {
@@ -50,13 +50,13 @@ const getPaginatedPosts = async (
   const whereConditions = conditions.length ? { AND: conditions } : {};
 
   const [result, total] = await Promise.all([
-    await prisma.post.findMany({
+    await prisma.question.findMany({
       where: whereConditions,
       orderBy: { [sortBy]: sortOrder },
       skip,
       take,
     }),
-    await prisma.post.count({ where: whereConditions }),
+    await prisma.question.count({ where: whereConditions }),
   ]);
 
   return {
@@ -65,19 +65,19 @@ const getPaginatedPosts = async (
   };
 };
 
-const updatePost = async (id: string, data: Partial<Post>) => {
-  return prisma.post.update({ where: { id }, data });
+const updateQuestion = async (id: string, data: Prisma.QuestionUpdateInput) => {
+  return prisma.question.update({ where: { id }, data });
 };
 
-const deletePost = async (id: string) => {
-  return prisma.post.delete({ where: { id } });
+const deleteQuestion = async (id: string) => {
+  return prisma.question.delete({ where: { id } });
 };
 
-const postService = {
-  createPost,
-  getPostById,
-  getPaginatedPosts,
-  updatePost,
-  deletePost,
+const questionService = {
+  createQuestion,
+  getQuestionById,
+  getPaginatedQuestions,
+  updateQuestion,
+  deleteQuestion,
 };
-export default postService;
+export default questionService;

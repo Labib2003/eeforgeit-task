@@ -4,7 +4,7 @@ model Question {
   question String
   imageUrl String?
   step     EvaluationStep
-  level    Int
+  level    EvaluationLevel
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
