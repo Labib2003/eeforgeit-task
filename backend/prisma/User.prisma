@@ -1,0 +1,24 @@
+enum Role {
+  ADMIN
+  SUPERVISOR
+  STUDENT
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name  String
+  email String @unique
+  role  Role   @default(STUDENT)
+
+  otp               String?
+  otpExpiresAt      DateTime?
+  failedOtpAttempts Int       @default(0)
+  lockedUntil       DateTime?
+
+  submissions  Submission[] @relation("UserSubmissions")
+  examinations Submission[] @relation("UserExaminations")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

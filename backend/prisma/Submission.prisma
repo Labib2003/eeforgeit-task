@@ -1,0 +1,18 @@
+model Submission {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  submittedById String         @db.ObjectId
+  submittedBy   User           @relation(fields: [submittedById], references: [id], name: "UserSubmissions")
+  examinedById  String?        @db.ObjectId
+  examinedBy    User?          @relation(fields: [examinedById], references: [id], name: "UserExaminations")
+  step          EvaluationStep
+  score         Int
+
+  // Questions are duplicated in the submission to ensure that any updates to the original questions do not affect already submitted answers.
+  questionsAndAnswers Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([submittedById, step])
+}
