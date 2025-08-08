@@ -7,9 +7,9 @@ enum Role {
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  name  String
-  email String @unique
-  role  Role   @default(STUDENT)
+  name  String?
+  email String  @unique
+  role  Role    @default(STUDENT)
 
   otp               String?
   otpExpiresAt      DateTime?
