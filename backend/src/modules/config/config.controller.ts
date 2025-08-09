@@ -2,7 +2,7 @@ import catchAsync from "@/utils/catchAsync";
 import { status as httpStatus } from "http-status";
 import configService from "./config.service";
 
-const getConfig = catchAsync(async (req, res) => {
+const getConfig = catchAsync(async (_req, res) => {
   const response = await configService.getConfig();
 
   res.status(httpStatus.OK).json({

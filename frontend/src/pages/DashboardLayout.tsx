@@ -41,7 +41,7 @@ export default function DashboardLayout() {
           <ProfileMenu />
         </SidebarFooter>
       </Sidebar>
-      <main>
+      <main className="w-full">
         <SidebarTrigger />
         <div className="p-4">
           <Outlet />

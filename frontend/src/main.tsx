@@ -5,6 +5,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import DashboardLayout from "./pages/DashboardLayout.tsx";
 import Login from "./pages/Login.tsx";
 import { Toaster } from "sonner";
+import Questions from "./pages/Questions.tsx";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     element: accessToken ? <DashboardLayout /> : <Navigate to={"/"} />,
     children: [
       { index: true, element: <div>Dashboard Home</div> },
-      { path: "questions", element: <div>Questions</div> },
+      { path: "questions", element: <Questions /> },
     ],
   },
 ]);
