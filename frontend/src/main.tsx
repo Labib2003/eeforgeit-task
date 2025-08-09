@@ -6,6 +6,7 @@ import DashboardLayout from "./pages/DashboardLayout.tsx";
 import Login from "./pages/Login.tsx";
 import { Toaster } from "sonner";
 import Questions from "./pages/Questions.tsx";
+import ConfigPage from "./pages/Config.tsx";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: accessToken ? <DashboardLayout /> : <Navigate to={"/"} />,
     children: [
-      { index: true, element: <div>Dashboard Home</div> },
+      { index: true, element: <ConfigPage /> },
       { path: "questions", element: <Questions /> },
     ],
   },
