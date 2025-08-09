@@ -1,9 +1,20 @@
 import prisma from "@/config/prisma";
-import { Prisma } from "@/generated/prisma";
+import { EvaluationStep, Prisma } from "@/generated/prisma";
+import ApiError from "@/utils/ApiError";
 import calculatePagination, { PaginationOptions } from "@/utils/pagination";
+import { status as httpStatus } from "http-status";
 
 const createQuestion = async (data: Prisma.QuestionCreateInput) => {
-  return prisma.question.create({ data });
+  const questionsOfSameStepCount = await prisma.question.count({
+    where: { step: data.step },
+  });
+
+  if (questionsOfSameStepCount >= 44)
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can only create a maximum of 44 questions for each step.",
+    );
+  else return prisma.question.create({ data });
 };
 
 const getQuestionById = async (id: string) => {
@@ -66,7 +77,16 @@ const getPaginatedQuestions = async (
 };
 
 const updateQuestion = async (id: string, data: Prisma.QuestionUpdateInput) => {
-  return prisma.question.update({ where: { id }, data });
+  const questionsOfSameStepCount = await prisma.question.count({
+    where: { step: data.step as EvaluationStep },
+  });
+
+  if (data.step && questionsOfSameStepCount >= 44)
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can only create a maximum of 44 questions for each step.",
+    );
+  else return prisma.question.update({ where: { id }, data });
 };
 
 const deleteQuestion = async (id: string) => {
