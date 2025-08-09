@@ -1,0 +1,5 @@
+model Config {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  examLengthInMinutes Int @default(44)
+}
