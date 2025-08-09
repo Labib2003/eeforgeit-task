@@ -22,6 +22,6 @@ submissionRouter
     validateRequest(submissionValidator.updateSubmissionSchema),
     submissionController.updateSubmission,
   )
-  .delete(auth("STUDENT"), submissionController.deleteSubmission);
+  .delete(submissionController.deleteSubmission);
 
 export default submissionRouter;

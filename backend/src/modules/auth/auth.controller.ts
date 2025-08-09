@@ -47,7 +47,7 @@ const login = catchAsync(async (req, res) => {
   const { email, otp } = req.body;
 
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email, active: true },
     omit: {
       otp: false,
       otpExpiresAt: false,
