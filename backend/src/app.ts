@@ -4,6 +4,7 @@ import helmet from "helmet";
 import xss from "xss-clean";
 import morgan from "morgan";
 import { status as httpStatus } from "http-status";
+import cookieParser from "cookie-parser";
 import ApiError from "./utils/ApiError";
 import v1Router from "./routes/v1";
 import corsConfig from "./config/cors";
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(xss());
 app.use(morgan("dev"));
 app.use(cors(corsConfig));
+app.use(cookieParser());
 
 app.get("/", (_req, res) => {
   res.send("Hello World");

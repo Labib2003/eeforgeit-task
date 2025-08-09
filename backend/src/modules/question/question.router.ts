@@ -1,5 +1,6 @@
 import validateRequest from "@/middleware/validateRequest";
 import { Router } from "express";
+import auth from "@/middleware/auth";
 import questionController from "./question.controller";
 import questionValidator from "./question.validator";
 
@@ -11,7 +12,7 @@ questionRouter
     validateRequest(questionValidator.createQuestionSchema),
     questionController.createQuestion,
   )
-  .get(questionController.getPaginatedQuestions);
+  .get(auth("STUDENT"), questionController.getPaginatedQuestions);
 questionRouter
   .route("/:id")
   .get(questionController.getQuestionById)

@@ -30,6 +30,7 @@ const getQuestionById = catchAsync(async (req, res) => {
 const getPaginatedQuestions = catchAsync(async (req, res) => {
   const filters = pick(req.query, ["search", "step", "level"]);
   const options = pick(req.query, ["sort_by", "sort_order", "limit", "page"]);
+  const newAccessToken = res.locals.accessToken;
 
   const response = await questionService.getPaginatedQuestions(
     filters,
@@ -40,6 +41,7 @@ const getPaginatedQuestions = catchAsync(async (req, res) => {
     success: true,
     message: "Questions fetched successfully",
     data: response,
+    newAccessToken,
   });
 });
 

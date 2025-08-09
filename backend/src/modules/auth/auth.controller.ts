@@ -113,12 +113,20 @@ const login = catchAsync(async (req, res) => {
   });
 
   // Generate session token and create new session
-  const accessToken = jwt.sign({ sub: user.id }, env.jwt.accessTokenSecret, {
-    expiresIn: "1d",
-  });
-  const refreshToken = jwt.sign({ sub: user.id }, env.jwt.refreshTokenSecret, {
-    expiresIn: "7d",
-  });
+  const accessToken = jwt.sign(
+    { id: user.id, role: user.role },
+    env.jwt.accessTokenSecret,
+    {
+      expiresIn: "15m",
+    },
+  );
+  const refreshToken = jwt.sign(
+    { id: user.id, role: user.role },
+    env.jwt.refreshTokenSecret,
+    {
+      expiresIn: "7d",
+    },
+  );
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
