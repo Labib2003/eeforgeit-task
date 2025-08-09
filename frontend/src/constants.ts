@@ -1,3 +1,27 @@
 // ---- Placeholder enums (copy your real ones from backend) ----
 export const EVALUATION_STEPS: string[] = ["A", "B", "C"];
 export const EVALUATION_LEVELS: string[] = ["ONE", "TWO", "THREE"];
+export const COMPETENCIES: string[] = [
+  "MATHEMATICS",
+  "SCIENTIFICMETHOD",
+  "PROGRAMMING",
+  "DATAANALYSIS",
+  "MODELING",
+  "LABORATORY",
+  "DESIGN",
+  "SYSTEMSTHINKING",
+  "ALGORITHMS",
+  "TECHNOLOGY",
+  "CRITICALTHINKING",
+  "QUANTITATIVE",
+  "QUALITATIVE",
+  "RESEARCH",
+  "TROUBLESHOOTING",
+  "COMMUNICATION",
+  "COLLABORATION",
+  "PROJECTMANAGEMENT",
+  "ETHICS",
+  "CREATIVITY",
+  "ADAPTABILITY",
+  "LIFELONGLEARNING",
+];

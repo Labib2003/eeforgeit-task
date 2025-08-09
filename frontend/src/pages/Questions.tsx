@@ -20,7 +20,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { QuestionDialogForm } from "@/components/custom/QuestionModal";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectTrigger,
@@ -28,7 +27,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { EVALUATION_LEVELS, EVALUATION_STEPS } from "@/constants";
+import { COMPETENCIES, EVALUATION_LEVELS, EVALUATION_STEPS } from "@/constants";
 import { DeleteConfirmDialog } from "@/components/custom/DeleteConfirmationModal";
 
 interface Question {
@@ -37,6 +36,7 @@ interface Question {
   imageUrl: string;
   step: string;
   level: string;
+  competency: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,6 +59,7 @@ const Questions = () => {
   // NEW: filters
   const [selectedStep, setSelectedStep] = useState<string>("");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
+  const [selectedCompetency, setSelectedCompetency] = useState<string>("");
 
   const fetchQuestions = async (page = 1) => {
     try {
@@ -74,6 +75,10 @@ const Questions = () => {
           level:
             selectedLevel.length && selectedLevel !== "all"
               ? selectedLevel
+              : undefined,
+          competency:
+            selectedCompetency.length && selectedCompetency !== "all"
+              ? selectedCompetency
               : undefined,
         },
       });
@@ -101,7 +106,7 @@ const Questions = () => {
   useEffect(() => {
     fetchQuestions(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, refetch, selectedStep, selectedLevel]);
+  }, [currentPage, refetch, selectedStep, selectedLevel, selectedCompetency]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(totalResults / DEFAULT_LIMIT)),
@@ -129,12 +134,6 @@ const Questions = () => {
 
   const canPrev = currentPage > 1;
   const canNext = currentPage < totalPages;
-
-  const clearFilters = () => {
-    setSelectedStep("");
-    setSelectedLevel("");
-    setCurrentPage(1);
-  };
 
   return (
     <div>
@@ -188,6 +187,27 @@ const Questions = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Competency filter */}
+            <Select
+              value={selectedCompetency}
+              onValueChange={(v) => {
+                setSelectedCompetency(v);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Filter: Competency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Competencies</SelectItem>
+                {COMPETENCIES.map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <QuestionDialogForm mode="create" setRefetch={setRefetch} />
@@ -201,6 +221,7 @@ const Questions = () => {
             <TableHead>Image</TableHead>
             <TableHead>Step</TableHead>
             <TableHead className="text-right">Level</TableHead>
+            <TableHead className="text-right">Competency</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -214,6 +235,7 @@ const Questions = () => {
               </TableCell>
               <TableCell>{q.step}</TableCell>
               <TableCell className="text-right">{q.level}</TableCell>
+              <TableCell className="text-right">{q.competency}</TableCell>
               <TableCell className="text-right space-x-2">
                 <QuestionDialogForm
                   key={q.id}

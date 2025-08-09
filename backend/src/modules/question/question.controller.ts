@@ -28,7 +28,7 @@ const getQuestionById = catchAsync(async (req, res) => {
 });
 
 const getPaginatedQuestions = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ["search", "step", "level"]);
+  const filters = pick(req.query, ["search", "step", "level", "competency"]);
   const options = pick(req.query, ["sort_by", "sort_order", "limit", "page"]);
   const newAccessToken = res.locals.accessToken;
 
