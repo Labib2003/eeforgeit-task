@@ -114,14 +114,14 @@ const login = catchAsync(async (req, res) => {
 
   // Generate session token and create new session
   const accessToken = jwt.sign(
-    { id: user.id, role: user.role },
+    { id: user.id, name: user.name, role: user.role },
     env.jwt.accessTokenSecret,
     {
       expiresIn: "15m",
     },
   );
   const refreshToken = jwt.sign(
-    { id: user.id, role: user.role },
+    { id: user.id, user: user.name, role: user.role },
     env.jwt.refreshTokenSecret,
     {
       expiresIn: "7d",
@@ -138,7 +138,7 @@ const login = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json({
     success: true,
     message: "Login successful",
-    data: { accessToken },
+    data: { accessToken, name: user.name },
   });
 });
 

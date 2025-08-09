@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor to automatically attach token if available
+// Request interceptor → attach token if available
 axiosInstance.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access_token");
@@ -20,22 +20,23 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor to handle errors globally
+// Response interceptor → store new access token + handle errors globally
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // ✅ Automatically update token if backend sends a new one
+    const newAccessToken = response?.data?.newAccessToken;
+    if (newAccessToken && typeof window !== "undefined") {
+      localStorage.setItem("access_token", newAccessToken);
+    }
+    return response;
+  },
   (error) => {
     if (!error.response) {
-      // This typically means it's a CORS/network error
       toast.info("Server is currently down. Please try again later.");
+    } else if (error.response?.data?.message === "Session not found") {
+      // Handle session expiration here if needed
     }
-    // If the error response indicates "Session not found", handle accordingly
-    else if (error.response?.data.message === "Session not found") {
-      // Optionally: You could add logic here (e.g., redirect to login page)
-      return Promise.reject(error);
-    } else {
-      // For all other errors, show a toast error message
-      return Promise.reject(error);
-    }
+    return Promise.reject(error);
   },
 );
 

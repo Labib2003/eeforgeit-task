@@ -76,6 +76,7 @@ export default function LoginForm() {
         const authToken = res.data.data.accessToken;
         if (authToken) {
           localStorage.setItem("access_token", authToken);
+          localStorage.setItem("name", res.data.data.name);
           window.location.reload();
         } else {
           toast.error("Ops! Failed to navigate.");

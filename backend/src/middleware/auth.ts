@@ -58,7 +58,7 @@ const auth = (...authorizedRoles: Role[]): RequestHandler => {
           );
 
         const newAccessToken = jwt.sign(
-          { id: payload.id, role: payload.role },
+          { id: payload.id, name: payload.name, role: payload.role },
           env.jwt.accessTokenSecret,
           {
             expiresIn: "1m",
