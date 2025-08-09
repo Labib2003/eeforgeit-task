@@ -12,7 +12,7 @@ import { Link } from "react-router";
 import { useLocation } from "react-router";
 import { Outlet } from "react-router";
 
-export default function Layout() {
+export default function DashboardLayout() {
   const location = useLocation();
   const slug = location.pathname.split("/").pop();
 
