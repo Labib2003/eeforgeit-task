@@ -1,12 +1,12 @@
 model Submission {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  submittedById String         @db.ObjectId
-  submittedBy   User           @relation(fields: [submittedById], references: [id], name: "UserSubmissions")
-  examinedById  String?        @db.ObjectId
-  examinedBy    User?          @relation(fields: [examinedById], references: [id], name: "UserExaminations")
+  submittedById String           @db.ObjectId
+  submittedBy   User             @relation(fields: [submittedById], references: [id], name: "UserSubmissions")
+  examinedById  String?          @db.ObjectId
+  examinedBy    User?            @relation(fields: [examinedById], references: [id], name: "UserExaminations")
   step          EvaluationStep
-  score         Int
+  level         EvaluationLevel?
 
   // Questions are duplicated in the submission to ensure that any updates to the original questions do not affect already submitted answers.
   questionsAndAnswers Json
