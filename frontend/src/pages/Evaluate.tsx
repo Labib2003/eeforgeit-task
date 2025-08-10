@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import Timer from "@/components/custom/Timer";
 
 type Submission = {
   id: string;
@@ -21,6 +22,7 @@ type Submission = {
 type Question = {
   id: string;
   question: string;
+  competency: string;
   imageUrl?: string;
   step: string;
   level: string;
@@ -36,12 +38,13 @@ export default function EvaluatePage() {
 
   // evaluation session state
   const [started, setStarted] = useState(false);
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [submission, setSubmission] = useState<Submission>();
   const [step, setStep] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [done, setDone] = useState(false);
+  const [config, setConfig] = useState<{ examLengthInMinutes: number }>();
 
   // list student’s submissions (max 3)
   const fetchSubmissions = async () => {
@@ -61,9 +64,8 @@ export default function EvaluatePage() {
   // start or retake a step
   const startEvaluation = async (targetStep: string) => {
     try {
-      // 1) fetch 22 questions for the target step
       const qRes = await axiosInstance.get("/questions", {
-        params: { page: 1, limit: 22, step: targetStep },
+        params: { page: 1, limit: 44, step: targetStep },
       });
       const fetched: Question[] = qRes?.data?.data?.data ?? [];
       if (!fetched.length) {
@@ -88,9 +90,12 @@ export default function EvaluatePage() {
         return;
       }
 
+      const configRes = await axiosInstance.get("/config");
+
       // init evaluation session state
       setStep(targetStep);
-      setSubmissionId(newId);
+      setSubmission(createRes?.data?.data);
+      setConfig(configRes?.data?.data);
       setQuestions(fetched);
       setAnswers([]); // local answered list
       setCurrentAnswer("");
@@ -106,7 +111,7 @@ export default function EvaluatePage() {
 
   // submit current answer and append (PATCH) then advance
   const submitCurrentAnswer = async () => {
-    if (!submissionId) return;
+    if (!submission) return;
 
     try {
       const answerText = (currentAnswer || "").trim();
@@ -122,7 +127,7 @@ export default function EvaluatePage() {
           answer: newAnswers[i] ?? "",
         }));
 
-      await axiosInstance.patch(`/submissions/${submissionId}`, {
+      await axiosInstance.patch(`/submissions/${submission.id}`, {
         questionsAndAnswers,
       });
 
@@ -147,52 +152,70 @@ export default function EvaluatePage() {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="max-w-2xl mx-auto py-10 space-y-6">
+    <div className="mx-auto py-10 space-y-6">
       <h1 className="text-2xl font-bold">Evaluate</h1>
 
       {/* Inline evaluation UI (one question at a time) */}
-      {started && submissionId && step && currentQ ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {step} • Question {currentIndex + 1} / {questions.length}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <p className="font-medium">{currentQ.question}</p>
-              {currentQ.imageUrl && (
-                <div className="rounded border p-2">
-                  <a
-                    href={currentQ.imageUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs underline"
-                  >
-                    View attached image
-                  </a>
-                </div>
-              )}
-            </div>
+      {started && submission && step && currentQ ? (
+        <div className="flex justify-center">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">
+                {(() => {
+                  const deadline =
+                    new Date(submission.createdAt).getTime() +
+                    config!.examLengthInMinutes * 60 * 1000;
+                  const remaining = deadline - new Date().getTime();
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Your answer</label>
-              <Textarea
-                rows={4}
-                placeholder="Type your answer..."
-                value={currentAnswer}
-                onChange={(e) => setCurrentAnswer(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-muted-foreground">
-                Submission: {submissionId.slice(0, 8)}…
+                  return (
+                    <Timer initialTimeRemaining={remaining / (1000 * 60)} />
+                  );
+                })()}
+                {step} • Question {currentIndex + 1} / {questions.length}
+                <br />
+                <span className="text-red-600">
+                  Please note: Do not refresh the page or close the browser.
+                  Exiting this page will terminate the exam immediately.
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p>Topic: {currentQ.competency}</p>
+                <p>Question: {currentQ.question}</p>
+                {currentQ.imageUrl && (
+                  <div className="rounded border p-2">
+                    <a
+                      href={currentQ.imageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs underline"
+                    >
+                      View attached image
+                    </a>
+                  </div>
+                )}
               </div>
-              <Button onClick={submitCurrentAnswer}>Submit & Next</Button>
-            </div>
-          </CardContent>
-        </Card>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Your answer</label>
+                <Textarea
+                  rows={4}
+                  placeholder="Type your answer..."
+                  value={currentAnswer}
+                  onChange={(e) => setCurrentAnswer(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">
+                  Submission: {submission.id.slice(0, 8)}…
+                </div>
+                <Button onClick={submitCurrentAnswer}>Submit & Next</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <>
           {!hasAny ? (

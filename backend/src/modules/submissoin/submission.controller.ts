@@ -4,6 +4,7 @@ import { status as httpStatus } from "http-status";
 import ApiError from "@/utils/ApiError";
 import { EvaluationLevel } from "@/generated/prisma";
 import submissionService from "./submission.service";
+import configService from "../config/config.service";
 
 const createSubmission = catchAsync(async (req, res) => {
   const data = req.body;
@@ -61,17 +62,31 @@ const updateSubmission = catchAsync(async (req, res) => {
   const newAccessToken = res.locals.accessToken;
 
   const submission = await submissionService.getSubmissionById(id);
+
   if (!submission)
     throw new ApiError(httpStatus.NOT_FOUND, "Submission not found");
-  if (
-    res.locals.user.role === "STUDENT" &&
-    (submission.submittedById !== res.locals.user.id ||
-      data.questionsAndAnswers?.find((q: Record<string, unknown>) => q.correct))
-  )
-    throw new ApiError(
-      httpStatus.FORBIDDEN,
-      "You do not have permission to update this submission",
-    );
+  if (res.locals.user.role === "STUDENT") {
+    const config = await configService.getConfig();
+
+    const deadline =
+      new Date(submission.createdAt).getTime() +
+      config!.examLengthInMinutes * 60 * 1000;
+
+    if (new Date().getTime() > new Date().setTime(deadline))
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        "Submission deadline has passed. Refresh the page to return to the submission list.",
+      );
+
+    if (
+      submission.submittedById !== res.locals.user.id ||
+      data.questionsAndAnswers?.find((q: Record<string, unknown>) => q.correct)
+    )
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        "You do not have permission to update this submission",
+      );
+  }
   if (res.locals.user.role === "SUPERVISOR") {
     data.examinedById = res.locals.user.id;
 
