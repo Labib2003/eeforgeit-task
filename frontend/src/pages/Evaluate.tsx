@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import Timer from "@/components/custom/Timer";
+import { LEVEL_MAP, STEP_MAP } from "@/constants";
+import { AxiosError } from "axios";
 
 type Submission = {
   id: string;
@@ -158,7 +160,7 @@ export default function EvaluatePage() {
       {/* Inline evaluation UI (one question at a time) */}
       {started && submission && step && currentQ ? (
         <div className="flex justify-center">
-          <Card>
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="text-center">
                 {(() => {
@@ -248,9 +250,15 @@ export default function EvaluatePage() {
                       className="flex items-center justify-between rounded-md border p-3"
                     >
                       <div className="space-y-1">
-                        <div className="text-sm font-medium">{s.step}</div>
                         <div className="text-sm font-medium">
-                          {s.level || "Pending"}
+                          Submission for Step {STEP_MAP[s.step]}
+                        </div>
+                        <div className="text-sm font-medium">
+                          Result:{" "}
+                          {s.level ? s.step + LEVEL_MAP[s.level] : "Pending"}{" "}
+                          {s.level === "FAIL" && "(failed)"}
+                          {s.level === "READY_TO_PROCEED" &&
+                            "(eligible for next step)"}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {new Date(s.updatedAt).toLocaleString()} •{" "}
@@ -258,6 +266,30 @@ export default function EvaluatePage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="secondary"
+                          onClick={async () => {
+                            try {
+                              await axiosInstance.get(
+                                `/submissions/${s.id}/certificate`,
+                              );
+                              toast.success("Certificate sent to your email.");
+                            } catch (error) {
+                              if (error instanceof AxiosError)
+                                toast.error(
+                                  error.response?.data?.message ||
+                                    "Failed to send certificate.",
+                                );
+                              else
+                                toast.error(
+                                  "Something went wrong while sending the certificate.",
+                                );
+                            }
+                          }}
+                        >
+                          Send Certificate To Email
+                        </Button>
+
                         <Button
                           variant="destructive"
                           onClick={() => startEvaluation(s.step)}

@@ -67,7 +67,10 @@ const createSubmission = async (
 };
 
 const getSubmissionById = async (id: string) => {
-  return prisma.submission.findUnique({ where: { id } });
+  return prisma.submission.findUnique({
+    where: { id },
+    include: { submittedBy: true, examinedBy: true },
+  });
 };
 
 const getPaginatedSubmissions = async (

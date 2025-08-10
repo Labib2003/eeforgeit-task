@@ -22,6 +22,6 @@ questionRouter
     validateRequest(questionValidator.updateQuestionSchema),
     questionController.updateQuestion,
   )
-  .delete(questionController.deleteQuestion);
+  .delete(auth("ADMIN"), questionController.deleteQuestion);
 
 export default questionRouter;

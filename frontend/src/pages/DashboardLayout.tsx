@@ -16,6 +16,10 @@ export default function DashboardLayout() {
   const location = useLocation();
   const slug = location.pathname.split("/").pop();
 
+  const lsUser = localStorage.getItem("user");
+  const user = lsUser ? JSON.parse(lsUser) : null;
+  if (!user) window.location.href = "/";
+
   const StyledLink = ({ to, target }: { to: string; target: string }) => (
     <Link to={to}>
       <Button
@@ -34,11 +38,21 @@ export default function DashboardLayout() {
           <h2 className="font-semibold text-xl text-center">✅ Test_School</h2>
         </SidebarHeader>
         <SidebarContent className="p-3">
-          <StyledLink to="/dashboard" target="dashboard" />
-          <StyledLink to="/dashboard/questions" target="questions" />
-          <StyledLink to="/dashboard/users" target="users" />
-          <StyledLink to="/dashboard/evaluate" target="evaluate" />
-          <StyledLink to="/dashboard/submissions" target="submissions" />
+          {["ADMIN"].includes(user.role) && (
+            <StyledLink to="/dashboard" target="dashboard" />
+          )}
+          {["ADMIN"].includes(user.role) && (
+            <StyledLink to="/dashboard/questions" target="questions" />
+          )}
+          {["ADMIN"].includes(user.role) && (
+            <StyledLink to="/dashboard/users" target="users" />
+          )}
+          {["STUDENT"].includes(user.role) && (
+            <StyledLink to="/dashboard/evaluate" target="evaluate" />
+          )}
+          {["ADMIN", "SUPERVISOR"].includes(user.role) && (
+            <StyledLink to="/dashboard/submissions" target="submissions" />
+          )}
         </SidebarContent>
         <SidebarFooter>
           <ProfileMenu />

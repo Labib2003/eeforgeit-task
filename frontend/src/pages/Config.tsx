@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router";
 
 // --- Schema ---
 const configSchema = z.object({
@@ -28,6 +29,17 @@ const configSchema = z.object({
 type ConfigFormData = z.infer<typeof configSchema>;
 
 export default function ConfigPage() {
+  const navigate = useNavigate();
+
+  const lsUser = localStorage.getItem("user");
+  const user = lsUser ? JSON.parse(lsUser) : null;
+  if (!user) window.location.href = "/";
+
+  useEffect(() => {
+    if (user.role === "STUDENT") navigate("/dashboard/evaluate");
+    if (user.role === "SUPERVISOR") navigate("/dashboard/submissions");
+  }, [user, navigate]);
+
   const form = useForm<ConfigFormData>({
     resolver: zodResolver(configSchema),
     defaultValues: { examLengthInMinutes: 0 },

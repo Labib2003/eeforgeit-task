@@ -48,6 +48,13 @@ const updateUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
+  const user = await userService.getUserById(id);
+  if (res.locals.user.role === "STUDENT" && user?.id !== res.locals.user.id)
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to update this user",
+    );
+
   const response = await userService.updateUser(id, data);
 
   res.status(httpStatus.OK).json({

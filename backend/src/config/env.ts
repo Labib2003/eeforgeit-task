@@ -17,6 +17,10 @@ const env = {
     refreshTokenSecret:
       process.env.REFRESH_TOKEN_SECRET ?? "refresh_token_secret",
   },
+  email: {
+    user: process.env.EMAIL_USER || "",
+    pass: process.env.EMAIL_PASS || "",
+  },
 };
 
 export default env;

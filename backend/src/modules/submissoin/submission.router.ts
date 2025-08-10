@@ -25,6 +25,9 @@ submissionRouter
     validateRequest(submissionValidator.updateSubmissionSchema),
     submissionController.updateSubmission,
   )
-  .delete(auth("SUPERVISOR"), submissionController.deleteSubmission);
+  .delete(auth("SUPERVISOR", "ADMIN"), submissionController.deleteSubmission);
+submissionRouter
+  .route("/:id/certificate")
+  .get(auth("STUDENT"), submissionController.sendCertificate);
 
 export default submissionRouter;

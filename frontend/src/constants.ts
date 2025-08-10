@@ -1,5 +1,10 @@
 export const EVALUATION_STEPS: string[] = ["A", "B", "C"];
-export const EVALUATION_LEVELS: string[] = ["ONE", "TWO", "THREE"];
+export const EVALUATION_LEVELS: string[] = [
+  "FAIL",
+  "ONE",
+  "TWO",
+  "READY_TO_PROCEED",
+];
 export const COMPETENCIES: string[] = [
   "MATHEMATICS",
   "SCIENTIFICMETHOD",
@@ -25,3 +30,16 @@ export const COMPETENCIES: string[] = [
   "LIFELONGLEARNING",
 ];
 export const ROLE_OPTIONS: string[] = ["ADMIN", "SUPERVISOR", "STUDENT"];
+
+export const LEVEL_MAP = {
+  FAIL: "0",
+  ONE: "1",
+  TWO: "2",
+  READY_TO_PROCEED: "3",
+};
+
+export const STEP_MAP = {
+  A: "1",
+  B: "2",
+  C: "3",
+};
