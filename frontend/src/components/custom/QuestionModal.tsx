@@ -32,6 +32,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { EVALUATION_LEVELS, EVALUATION_STEPS } from "@/constants";
+import { AxiosError } from "axios";
 
 // ---- Zod schema ---
 const questionSchema = z.object({
@@ -79,8 +80,10 @@ export function QuestionDialogForm({
       setRefetch((prev) => !prev);
       form.reset();
       onOpenChange(false);
-    } catch {
-      toast.error(`Failed to ${mode} question`);
+    } catch (err) {
+      if (err instanceof AxiosError)
+        toast.error(err.response?.data?.message || "An error occurred");
+      else toast.error(`Failed to ${mode} question`);
     }
   };
 

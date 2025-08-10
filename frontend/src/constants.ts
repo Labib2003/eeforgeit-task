@@ -1,10 +1,5 @@
 export const EVALUATION_STEPS: string[] = ["A", "B", "C"];
-export const EVALUATION_LEVELS: string[] = [
-  "FAIL",
-  "ONE",
-  "TWO",
-  "READY_TO_PROCEED",
-];
+export const EVALUATION_LEVELS: string[] = ["ONE", "TWO"];
 export const COMPETENCIES: string[] = [
   "MATHEMATICS",
   "SCIENTIFICMETHOD",
