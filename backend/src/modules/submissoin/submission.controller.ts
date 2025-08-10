@@ -89,8 +89,7 @@ const updateSubmission = catchAsync(async (req, res) => {
         httpStatus.FORBIDDEN,
         "You do not have permission to update this submission",
       );
-  }
-  if (res.locals.user.role === "SUPERVISOR") {
+  } else {
     data.examinedById = res.locals.user.id;
 
     // Use the incoming QA list if provided; otherwise fall back to current

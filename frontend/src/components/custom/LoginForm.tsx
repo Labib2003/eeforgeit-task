@@ -1,23 +1,30 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+import axiosInstance from "@/utils/axiosInstance";
+
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import axiosInstance from "@/utils/axiosInstance";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
+import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 
 const requestOtpSchema = z.object({
   email: z
@@ -27,7 +34,7 @@ const requestOtpSchema = z.object({
 });
 
 const verifyOtpSchema = z.object({
-  otp: z.string().min(5).max(5),
+  otp: z.string().min(5, "OTP must be 5 digits").max(5, "OTP must be 5 digits"),
 });
 
 export default function LoginForm() {
@@ -41,13 +48,13 @@ export default function LoginForm() {
 
   const verifyOtpForm = useForm<z.infer<typeof verifyOtpSchema>>({
     resolver: zodResolver(verifyOtpSchema),
+    defaultValues: { otp: "" },
   });
 
   const onRequestOtp = async (values: z.infer<typeof requestOtpSchema>) => {
     try {
-      const email = values.email;
       const res = await axiosInstance.get("/auth/generate-otp", {
-        params: { email },
+        params: { email: values.email },
       });
       if (res.data.success) {
         toast.success(`OTP: ${res.data.data.otp}`);
@@ -80,11 +87,11 @@ export default function LoginForm() {
           toast.error("Ops! Failed to navigate.");
         }
       } else {
-        console.log(res.data.message);
+        toast.error(res.data.message ?? "Login failed");
       }
     } catch (error) {
       if (error instanceof AxiosError)
-        return toast.error(error.response?.data.message);
+        return toast.error(error.response?.data?.message);
       toast.error("An error occurred");
     }
   };
@@ -99,103 +106,103 @@ export default function LoginForm() {
   }, [otpRequested, resendTimer]);
 
   return (
-    <div className="bg-white border rounded-xl p-6">
-      <h1 className="text-2xl font-semibold mb-4">Log in</h1>
-
-      {/* Email Form */}
+    <div className="space-y-6">
+      {/* Email form */}
       <Form {...requestOtpForm}>
-        <form onSubmit={requestOtpForm.handleSubmit(onRequestOtp)}>
+        <form
+          onSubmit={requestOtpForm.handleSubmit(onRequestOtp)}
+          className="space-y-3"
+        >
           <FormField
             control={requestOtpForm.control}
             name="email"
-            rules={{
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
-            }}
             render={({ field }) => (
               <FormItem>
-                <label>Email</label>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <div className="flex items-center border rounded px-3 py-2">
-                    <Mail className="mr-2 text-gray-500" />
-                    <input
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
                       type="email"
-                      className="outline-none w-full"
                       placeholder="you@example.com"
+                      className="pl-9"
                       {...field}
                       disabled={otpRequested}
                     />
                   </div>
                 </FormControl>
+                <FormDescription className="text-xs">
+                  We’ll send a 5-digit code to this address.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
           {!otpRequested && (
-            <button
-              type="submit"
-              className="mt-6 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
+            <Button type="submit" className="w-full">
               Request OTP
-            </button>
+            </Button>
           )}
         </form>
       </Form>
 
-      {/* OTP Form */}
+      {/* OTP form */}
       {otpRequested && (
         <Form {...verifyOtpForm}>
-          <form onSubmit={verifyOtpForm.handleSubmit(onVerifyOtp)}>
+          <form
+            onSubmit={verifyOtpForm.handleSubmit(onVerifyOtp)}
+            className="space-y-4"
+          >
             <FormField
               control={verifyOtpForm.control}
               name="otp"
-              rules={{
-                required: "OTP is required",
-                minLength: { value: 5, message: "OTP must be 5 digits" },
-              }}
               render={({ field }) => (
-                <FormItem className="mt-6">
+                <FormItem>
+                  <FormLabel>Enter OTP</FormLabel>
                   <FormControl>
-                    <div className="mt-5 w-full flex justify-center">
-                      <InputOTP maxLength={5} {...field}>
-                        <InputOTPGroup className="grid grid-cols-5 gap-3">
-                          {[...Array(5)].map((_, i) => (
-                            <InputOTPSlot
-                              key={i}
-                              index={i}
-                              className="p-5 text-xl border-2 border-gray-300 rounded"
-                            />
-                          ))}
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </div>
+                    <InputOTP maxLength={5} {...field}>
+                      <InputOTPGroup className="flex gap-2 justify-center">
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <InputOTPSlot
+                            key={i}
+                            index={i}
+                            className="h-11 w-11 rounded-md border border-black/30 text-lg"
+                          />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
+                  <FormDescription className="text-xs">
+                    Didn’t get it? Check your spam folder.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="text-center mt-3">
+
+            <div className="flex items-center justify-between text-xs">
+              <button
+                type="button"
+                onClick={() => setOtpRequested(false)}
+                className="underline text-muted-foreground hover:text-foreground"
+              >
+                Change email
+              </button>
+
               <button
                 type="button"
                 disabled={resendTimer > 0}
                 onClick={() => onRequestOtp(requestOtpForm.getValues())}
-                className={`text-green-600 text-sm ${
-                  resendTimer > 0 ? "opacity-50" : ""
-                }`}
+                className="underline text-primary disabled:text-muted-foreground"
               >
                 {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend OTP"}
               </button>
             </div>
-            <button
-              type="submit"
-              className="mt-4 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
+
+            <Button type="submit" className="w-full">
               Verify OTP
-            </button>
+            </Button>
           </form>
         </Form>
       )}

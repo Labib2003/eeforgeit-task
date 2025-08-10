@@ -21,7 +21,7 @@ submissionRouter
   .route("/:id")
   .get(auth("ADMIN"), submissionController.getSubmissionById)
   .patch(
-    auth("STUDENT", "SUPERVISOR"),
+    auth("STUDENT", "SUPERVISOR", "ADMIN"),
     validateRequest(submissionValidator.updateSubmissionSchema),
     submissionController.updateSubmission,
   )
