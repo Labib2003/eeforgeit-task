@@ -31,7 +31,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { EVALUATION_LEVELS, EVALUATION_STEPS } from "@/constants";
+import { COMPETENCIES, EVALUATION_LEVELS, EVALUATION_STEPS } from "@/constants";
 import { AxiosError } from "axios";
 
 // ---- Zod schema ---
@@ -40,6 +40,7 @@ const questionSchema = z.object({
   imageUrl: z.string().optional(),
   step: z.string().min(1, "Step is required"),
   level: z.string().min(1, "Level is required"),
+  competency: z.string(),
 });
 
 type QuestionFormData = z.infer<typeof questionSchema>;
@@ -68,6 +69,7 @@ export function QuestionDialogForm({
       imageUrl: defaultValues?.imageUrl ?? "",
       step: defaultValues?.step ?? "",
       level: defaultValues?.level ?? "",
+      competency: defaultValues?.competency ?? "",
     },
   });
   const [open, onOpenChange] = useState(false);
@@ -202,6 +204,31 @@ export function QuestionDialogForm({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="competency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Competency</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select competency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COMPETENCIES.map((step) => (
+                          <SelectItem key={step} value={step}>
+                            {step}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* ACTIONS */}
             <div className="flex justify-end gap-2 pt-2">
