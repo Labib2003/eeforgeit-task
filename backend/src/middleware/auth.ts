@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 const auth = (...authorizedRoles: Role[]): RequestHandler => {
   return async (req, res, next) => {
     try {
+      conosle.log(req.cookies.refreshToken);
       const accessToken = req.headers.authorization?.split(" ")[1];
       if (!accessToken) {
         res.locals.user = null;
