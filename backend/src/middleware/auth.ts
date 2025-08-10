@@ -1,6 +1,6 @@
 import env from "@/config/env";
 import prisma from "@/config/prisma";
-import { Role, User } from "@/generated/prisma";
+import { Role } from "@/generated/prisma";
 import ApiError from "@/utils/ApiError.js";
 import { RequestHandler } from "express";
 import { status as httpStatus } from "http-status";
@@ -17,31 +17,25 @@ const auth = (...authorizedRoles: Role[]): RequestHandler => {
 
       let decoded: jwt.JwtPayload | undefined;
       if (accessToken) {
-        try {
-          decoded = jwt.verify(
-            accessToken,
-            env.jwt.accessTokenSecret,
-          ) as jwt.JwtPayload;
+        decoded = jwt.verify(
+          accessToken,
+          env.jwt.accessTokenSecret,
+        ) as jwt.JwtPayload;
 
-          const user = await prisma.user.findUnique({
-            where: { id: decoded.id },
-          });
-          if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.id },
+        });
+        if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
 
-          if (!authorizedRoles.includes(user.role))
-            throw new ApiError(
-              httpStatus.FORBIDDEN,
-              "You do not have permission to access this resource",
-            );
+        if (!authorizedRoles.includes(user.role))
+          throw new ApiError(
+            httpStatus.FORBIDDEN,
+            "You do not have permission to access this resource",
+          );
 
-          res.locals.user = decoded;
-          next();
-          return;
-        } catch (err: unknown) {
-          // @ts-expect-error error is not typed
-          if (err.name !== "TokenExpiredError")
-            throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
-        }
+        res.locals.user = user;
+        next();
+        return;
       }
 
       const { refreshToken } = req.cookies;

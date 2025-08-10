@@ -9,6 +9,7 @@ const submissionSchema = z.strictObject({
         question: z.string(),
         imageUrl: z.string().optional(),
         answer: z.string(),
+        correct: z.boolean().optional(),
       }),
     )
     .min(1),

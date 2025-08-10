@@ -9,6 +9,7 @@ import Questions from "./pages/Questions.tsx";
 import ConfigPage from "./pages/Config.tsx";
 import UsersPage from "./pages/Users.tsx";
 import EvaluatePage from "./pages/Evaluate.tsx";
+import SubmissionsPage from "./pages/Submissions.tsx";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "questions", element: <Questions /> },
       { path: "users", element: <UsersPage /> },
       { path: "evaluate", element: <EvaluatePage /> },
+      { path: "submissions", element: <SubmissionsPage /> },
     ],
   },
 ]);

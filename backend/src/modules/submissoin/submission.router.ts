@@ -13,15 +13,18 @@ submissionRouter
     validateRequest(submissionValidator.createSubmissionSchema),
     submissionController.createSubmission,
   )
-  .get(auth("STUDENT"), submissionController.getPaginatedSubmissions);
+  .get(
+    auth("ADMIN", "SUPERVISOR"),
+    submissionController.getPaginatedSubmissions,
+  );
 submissionRouter
   .route("/:id")
-  .get(auth("STUDENT"), submissionController.getSubmissionById)
+  .get(auth("ADMIN"), submissionController.getSubmissionById)
   .patch(
-    auth("STUDENT"),
+    auth("STUDENT", "SUPERVISOR"),
     validateRequest(submissionValidator.updateSubmissionSchema),
     submissionController.updateSubmission,
   )
-  .delete(submissionController.deleteSubmission);
+  .delete(auth("STUDENT", "SUPERVISOR"), submissionController.deleteSubmission);
 
 export default submissionRouter;

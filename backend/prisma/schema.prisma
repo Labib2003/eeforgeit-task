@@ -21,6 +21,7 @@ enum EvaluationStep {
 }
 
 enum EvaluationLevel {
+  FAIL
   ONE
   TWO
   THREE

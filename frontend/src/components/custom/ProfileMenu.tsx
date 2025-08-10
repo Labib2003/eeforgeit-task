@@ -76,6 +76,7 @@ export function ProfileMenu() {
         <DropdownMenuItem
           onClick={() => {
             localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
             window.location.reload();
           }}
         >

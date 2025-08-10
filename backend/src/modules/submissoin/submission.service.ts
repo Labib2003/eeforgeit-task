@@ -70,6 +70,9 @@ const getPaginatedSubmissions = async (
       orderBy: { [sortBy]: sortOrder },
       skip,
       take,
+      include: {
+        submittedBy: true,
+      },
     }),
     await prisma.submission.count({ where: whereConditions }),
   ]);
