@@ -113,20 +113,12 @@ const login = catchAsync(async (req, res) => {
   });
 
   // Generate session token and create new session
-  const accessToken = jwt.sign(
-    { id: user.id, name: user.name, role: user.role },
-    env.jwt.accessTokenSecret,
-    {
-      expiresIn: "15m",
-    },
-  );
-  const refreshToken = jwt.sign(
-    { id: user.id, user: user.name, role: user.role },
-    env.jwt.refreshTokenSecret,
-    {
-      expiresIn: "7d",
-    },
-  );
+  const accessToken = jwt.sign({ id: user.id }, env.jwt.accessTokenSecret, {
+    expiresIn: "15m",
+  });
+  const refreshToken = jwt.sign({ id: user.id }, env.jwt.refreshTokenSecret, {
+    expiresIn: "7d",
+  });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
@@ -138,7 +130,15 @@ const login = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json({
     success: true,
     message: "Login successful",
-    data: { accessToken, name: user.name },
+    data: {
+      accessToken,
+      user: {
+        name: user.name,
+        email: user.email,
+        id: user.id,
+        role: user.role,
+      },
+    },
   });
 });
 

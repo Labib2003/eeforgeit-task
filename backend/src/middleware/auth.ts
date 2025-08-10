@@ -1,5 +1,6 @@
 import env from "@/config/env";
-import { Role } from "@/generated/prisma";
+import prisma from "@/config/prisma";
+import { Role, User } from "@/generated/prisma";
 import ApiError from "@/utils/ApiError.js";
 import { RequestHandler } from "express";
 import { status as httpStatus } from "http-status";
@@ -22,7 +23,12 @@ const auth = (...authorizedRoles: Role[]): RequestHandler => {
             env.jwt.accessTokenSecret,
           ) as jwt.JwtPayload;
 
-          if (!authorizedRoles.includes(decoded.role))
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+          });
+          if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+
+          if (!authorizedRoles.includes(user.role))
             throw new ApiError(
               httpStatus.FORBIDDEN,
               "You do not have permission to access this resource",
@@ -51,14 +57,19 @@ const auth = (...authorizedRoles: Role[]): RequestHandler => {
           env.jwt.refreshTokenSecret,
         ) as jwt.JwtPayload;
 
-        if (!authorizedRoles.includes(payload.role))
+        const user = await prisma.user.findUnique({
+          where: { id: payload.id },
+        });
+        if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+
+        if (!authorizedRoles.includes(user.role))
           throw new ApiError(
             httpStatus.FORBIDDEN,
             "You do not have permission to access this resource",
           );
 
         const newAccessToken = jwt.sign(
-          { id: payload.id, name: payload.name, role: payload.role },
+          { id: payload.id },
           env.jwt.accessTokenSecret,
           {
             expiresIn: "1m",

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Form,
   FormControl,
@@ -76,7 +74,7 @@ export default function LoginForm() {
         const authToken = res.data.data.accessToken;
         if (authToken) {
           localStorage.setItem("access_token", authToken);
-          localStorage.setItem("name", res.data.data.name);
+          localStorage.setItem("user", JSON.stringify(res.data.data.user));
           window.location.reload();
         } else {
           toast.error("Ops! Failed to navigate.");

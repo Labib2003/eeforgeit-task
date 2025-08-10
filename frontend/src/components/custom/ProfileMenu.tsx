@@ -16,9 +16,11 @@ import { toast } from "sonner";
 export function ProfileMenu() {
   const token = localStorage.getItem("access_token");
   const decoded: Record<string, string> = jwtDecode(token!);
+  const lsUser = localStorage.getItem("user");
+  const user = lsUser ? JSON.parse(lsUser) : {};
 
   const [editMode, setEditMode] = useState(false);
-  const [name, setName] = useState(localStorage.getItem("name") || "");
+  const [name, setName] = useState(user.name);
 
   const handleSave = async () => {
     if (!name.trim()) return toast.error("Name cannot be empty");
@@ -27,9 +29,7 @@ export function ProfileMenu() {
         name,
       });
       toast.success("Name updated successfully");
-      localStorage.setItem("name", name);
-
-      // Optionally refresh token if backend issues a new one
+      localStorage.setItem("user", JSON.stringify({ ...user, name }));
       setEditMode(false);
     } catch {
       toast.error("Failed to update name");
