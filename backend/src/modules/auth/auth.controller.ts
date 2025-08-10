@@ -39,7 +39,7 @@ const generateOtp = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json({
     success: true,
     message: "OTP generated successfully",
-    data: env.app.nodeEnv === "development" ? { otp } : undefined,
+    data: { otp },
   });
 });
 

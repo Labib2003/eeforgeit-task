@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "https://eeforgeit-task.onrender.com/api/v1",
   headers: {
     "Content-Type": "application/json",
   },

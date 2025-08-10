@@ -26,6 +26,9 @@ const Login = () => {
               This demo uses a simple <strong>OTP-based login</strong> for quick
               access—no signup form required. New users are automatically
               registered as <strong>Students</strong>.
+              <br />
+              The server is hosted on a <strong>free</strong> render.com
+              instance, so it may take a few seconds to wake up.
             </p>
 
             <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
