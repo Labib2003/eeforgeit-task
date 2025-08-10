@@ -95,7 +95,7 @@ const updateSubmission = catchAsync(async (req, res) => {
     } else if (pct < 75) {
       level = EvaluationLevel.TWO;
     } else {
-      level = EvaluationLevel.THREE;
+      level = EvaluationLevel.READY_TO_PROCEED;
     }
 
     data.level = level;

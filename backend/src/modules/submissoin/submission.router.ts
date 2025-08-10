@@ -14,7 +14,7 @@ submissionRouter
     submissionController.createSubmission,
   )
   .get(
-    auth("ADMIN", "SUPERVISOR"),
+    auth("ADMIN", "SUPERVISOR", "STUDENT"),
     submissionController.getPaginatedSubmissions,
   );
 submissionRouter
@@ -25,6 +25,6 @@ submissionRouter
     validateRequest(submissionValidator.updateSubmissionSchema),
     submissionController.updateSubmission,
   )
-  .delete(auth("STUDENT", "SUPERVISOR"), submissionController.deleteSubmission);
+  .delete(auth("SUPERVISOR"), submissionController.deleteSubmission);
 
 export default submissionRouter;

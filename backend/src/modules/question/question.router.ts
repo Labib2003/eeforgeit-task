@@ -9,14 +9,16 @@ const questionRouter = Router();
 questionRouter
   .route("/")
   .post(
+    auth("ADMIN"),
     validateRequest(questionValidator.createQuestionSchema),
     questionController.createQuestion,
   )
-  .get(auth("STUDENT"), questionController.getPaginatedQuestions);
+  .get(auth("ADMIN", "STUDENT"), questionController.getPaginatedQuestions);
 questionRouter
   .route("/:id")
-  .get(questionController.getQuestionById)
+  .get(auth("ADMIN"), questionController.getQuestionById)
   .patch(
+    auth("ADMIN"),
     validateRequest(questionValidator.updateQuestionSchema),
     questionController.updateQuestion,
   )

@@ -1,6 +1,8 @@
 import prisma from "@/config/prisma";
 import { Prisma } from "@/generated/prisma";
+import ApiError from "@/utils/ApiError";
 import calculatePagination, { PaginationOptions } from "@/utils/pagination";
+import { status as httpStatus } from "http-status";
 
 const createSubmission = async (
   data: Prisma.SubmissionUncheckedCreateInput,
@@ -13,6 +15,49 @@ const createSubmission = async (
       },
     },
   });
+
+  if (existingSubmission && !existingSubmission.level)
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You cannot resubmit before evaluation",
+    );
+  if (data.step === "A" && existingSubmission?.level === "FAIL")
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You cannot resubmit after failing step A. Contact your instructor for further assistance.",
+    );
+  if (data.step === "B") {
+    const stepASubmission = await prisma.submission.findUnique({
+      where: {
+        submittedById_step: {
+          submittedById: data.submittedById,
+          step: "A",
+        },
+      },
+    });
+
+    if (stepASubmission?.level !== "READY_TO_PROCEED")
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "You are not eligable to submit step B. Please ensure you have completed step A with ready to proceed level.",
+      );
+  }
+  if (data.step === "C") {
+    const stepBSubmission = await prisma.submission.findUnique({
+      where: {
+        submittedById_step: {
+          submittedById: data.submittedById,
+          step: "B",
+        },
+      },
+    });
+
+    if (stepBSubmission?.level !== "READY_TO_PROCEED")
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "You are not eligable to submit step C. Please ensure you have completed step B with ready to proceed level.",
+      );
+  }
 
   return prisma.$transaction(async (tx) => {
     if (existingSubmission)

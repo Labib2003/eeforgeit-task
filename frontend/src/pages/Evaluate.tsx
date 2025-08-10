@@ -228,6 +228,9 @@ export default function EvaluatePage() {
                     >
                       <div className="space-y-1">
                         <div className="text-sm font-medium">{s.step}</div>
+                        <div className="text-sm font-medium">
+                          {s.level || "Pending"}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           {new Date(s.updatedAt).toLocaleString()} •{" "}
                           {s.questionsAndAnswers.length} Qs
@@ -235,7 +238,7 @@ export default function EvaluatePage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           onClick={() => startEvaluation(s.step)}
                         >
                           Retake
@@ -243,24 +246,26 @@ export default function EvaluatePage() {
                       </div>
                     </div>
                   ))}
-                  {!subs[1] && (
-                    <Button
-                      onClick={() => {
-                        startEvaluation(STEP_2);
-                      }}
-                    >
-                      Evaluate Step 2
-                    </Button>
-                  )}
-                  {!subs[2] && (
-                    <Button
-                      onClick={() => {
-                        startEvaluation(STEP_3);
-                      }}
-                    >
-                      Evaluate Step 3
-                    </Button>
-                  )}
+                  <div className="space-x-2">
+                    {!subs[1] && (
+                      <Button
+                        onClick={() => {
+                          startEvaluation(STEP_2);
+                        }}
+                      >
+                        Evaluate Step 2
+                      </Button>
+                    )}
+                    {!subs[2] && (
+                      <Button
+                        onClick={() => {
+                          startEvaluation(STEP_3);
+                        }}
+                      >
+                        Evaluate Step 3
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

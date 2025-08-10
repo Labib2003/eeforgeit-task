@@ -17,25 +17,29 @@ const auth = (...authorizedRoles: Role[]): RequestHandler => {
 
       let decoded: jwt.JwtPayload | undefined;
       if (accessToken) {
-        decoded = jwt.verify(
-          accessToken,
-          env.jwt.accessTokenSecret,
-        ) as jwt.JwtPayload;
+        try {
+          decoded = jwt.verify(
+            accessToken,
+            env.jwt.accessTokenSecret,
+          ) as jwt.JwtPayload;
 
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.id },
-        });
-        if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+          });
+          if (!user) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
 
-        if (!authorizedRoles.includes(user.role))
-          throw new ApiError(
-            httpStatus.FORBIDDEN,
-            "You do not have permission to access this resource",
-          );
+          if (!authorizedRoles.includes(user.role))
+            throw new ApiError(
+              httpStatus.FORBIDDEN,
+              "You do not have permission to access this resource",
+            );
 
-        res.locals.user = user;
-        next();
-        return;
+          res.locals.user = user;
+          next();
+          return;
+        } catch (error) {
+          if (error.name !== "TokenExpiredError") throw error;
+        }
       }
 
       const { refreshToken } = req.cookies;
