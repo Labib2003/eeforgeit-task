@@ -36,6 +36,7 @@ export default function DashboardLayout() {
         <SidebarContent className="p-3">
           <StyledLink to="/dashboard" target="dashboard" />
           <StyledLink to="/dashboard/questions" target="questions" />
+          <StyledLink to="/dashboard/users" target="users" />
         </SidebarContent>
         <SidebarFooter>
           <ProfileMenu />

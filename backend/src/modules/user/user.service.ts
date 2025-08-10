@@ -70,7 +70,7 @@ const updateUser = async (id: string, data: Prisma.UserUpdateInput) => {
 };
 
 const deleteUser = async (id: string) => {
-  return prisma.user.update({ where: { id }, data: { active: false } });
+  return prisma.user.delete({ where: { id } });
 };
 
 const userService = {

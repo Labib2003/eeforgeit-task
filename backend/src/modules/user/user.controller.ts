@@ -28,7 +28,7 @@ const getUserById = catchAsync(async (req, res) => {
 });
 
 const getPaginatedUsers = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ["search", "step", "level"]);
+  const filters = pick(req.query, ["search", "role"]);
   const options = pick(req.query, ["sort_by", "sort_order", "limit", "page"]);
   const newAccessToken = res.locals.accessToken;
 
