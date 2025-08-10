@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 
 interface DeleteConfirmDialogProps {
   message: string;
@@ -22,20 +21,14 @@ export function DeleteConfirmDialog({
   onConfirm,
 }: DeleteConfirmDialogProps) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
-    setLoading(true);
-    try {
-      await onConfirm();
-      setOpen(false); // auto-close after success
-    } finally {
-      setLoading(false);
-    }
+    await onConfirm();
+    setOpen(false); // auto-close after success
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !loading && setOpen(v)}>
+    <Dialog open={open} onOpenChange={(v) => setOpen(v)}>
       <DialogTrigger asChild>
         <Button variant={"destructive"}>Delete</Button>
       </DialogTrigger>
@@ -45,19 +38,10 @@ export function DeleteConfirmDialog({
           <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2 pt-4">
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleConfirm}
-            disabled={loading}
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button variant="destructive" onClick={handleConfirm}>
             Confirm
           </Button>
         </div>

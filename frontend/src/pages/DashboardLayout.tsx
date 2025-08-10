@@ -37,6 +37,7 @@ export default function DashboardLayout() {
           <StyledLink to="/dashboard" target="dashboard" />
           <StyledLink to="/dashboard/questions" target="questions" />
           <StyledLink to="/dashboard/users" target="users" />
+          <StyledLink to="/dashboard/evaluate" target="evaluate" />
         </SidebarContent>
         <SidebarFooter>
           <ProfileMenu />

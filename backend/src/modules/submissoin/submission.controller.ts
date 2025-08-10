@@ -35,6 +35,9 @@ const getPaginatedSubmissions = catchAsync(async (req, res) => {
   const options = pick(req.query, ["sort_by", "sort_order", "limit", "page"]);
   const newAccessToken = res.locals.accessToken;
 
+  if (res.locals.user.role === "STUDENT")
+    filters.submittedById = res.locals.user.id;
+
   const response = await submissionService.getPaginatedSubmissions(
     filters,
     options,

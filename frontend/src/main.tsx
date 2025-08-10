@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import Questions from "./pages/Questions.tsx";
 import ConfigPage from "./pages/Config.tsx";
 import UsersPage from "./pages/Users.tsx";
+import EvaluatePage from "./pages/Evaluate.tsx";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { index: true, element: <ConfigPage /> },
       { path: "questions", element: <Questions /> },
       { path: "users", element: <UsersPage /> },
+      { path: "evaluate", element: <EvaluatePage /> },
     ],
   },
 ]);

@@ -1,6 +1,8 @@
 import catchAsync from "@/utils/catchAsync";
 import pick from "@/utils/pick";
 import { status as httpStatus } from "http-status";
+import { PrismaClientKnownRequestError } from "@/generated/prisma/runtime/library";
+import ApiError from "@/utils/ApiError";
 import userService from "./user.service";
 
 const createUser = catchAsync(async (req, res) => {
@@ -58,7 +60,17 @@ const updateUser = catchAsync(async (req, res) => {
 const deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const response = await userService.deleteUser(id);
+  let response;
+  try {
+    response = await userService.deleteUser(id);
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError)
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "User cannot be deleted as it is associated with other records",
+      );
+    throw error;
+  }
 
   res.status(httpStatus.OK).json({
     success: true,

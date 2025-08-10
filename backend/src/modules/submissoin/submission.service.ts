@@ -2,8 +2,23 @@ import prisma from "@/config/prisma";
 import { Prisma } from "@/generated/prisma";
 import calculatePagination, { PaginationOptions } from "@/utils/pagination";
 
-const createSubmission = async (data: Prisma.SubmissionCreateInput) => {
-  return prisma.submission.create({ data });
+const createSubmission = async (
+  data: Prisma.SubmissionUncheckedCreateInput,
+) => {
+  const existingSubmission = await prisma.submission.findUnique({
+    where: {
+      submittedById_step: {
+        submittedById: data.submittedById,
+        step: data.step,
+      },
+    },
+  });
+
+  return prisma.$transaction(async (tx) => {
+    if (existingSubmission)
+      await tx.submission.delete({ where: { id: existingSubmission.id } });
+    return tx.submission.create({ data });
+  });
 };
 
 const getSubmissionById = async (id: string) => {
