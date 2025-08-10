@@ -167,9 +167,7 @@ export default function EvaluatePage() {
                     config!.examLengthInMinutes * 60 * 1000;
                   const remaining = deadline - new Date().getTime();
 
-                  return (
-                    <Timer initialTimeRemaining={remaining / (1000 * 60)} />
-                  );
+                  return <Timer initialTimeRemaining={remaining / 1000} />;
                 })()}
                 {step} • Question {currentIndex + 1} / {questions.length}
                 <br />
